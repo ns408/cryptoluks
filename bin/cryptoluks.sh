@@ -7,10 +7,10 @@ FILESIZE=$3
 cryptoluks_mountpoint="${HOME}/cryptoluks/${FILENAME}"
 
 function usage() {
-  echo "Usage: ./simpleluks.sh command [args ...]"
-  echo "  ./simpleluks.sh create some_name size_in_GB"
-  echo "  ./simpleluks.sh open some_name"
-  echo "  ./simpleluks.sh close some_name"
+  echo "Usage: ./cryptoluks.sh command [args ...]"
+  echo "  ./cryptoluks.sh create some_name size_in_GB"
+  echo "  ./cryptoluks.sh open some_name"
+  echo "  ./cryptoluks.sh close some_name"
 }
 
 function cryptoluks_mount() {
