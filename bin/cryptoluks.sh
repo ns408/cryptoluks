@@ -8,7 +8,7 @@ cryptoluks_mountpoint="${HOME}/cryptoluks/${FILENAME}"
 
 function usage() {
   echo "Usage: ./cryptoluks.sh command [args ...]"
-  echo "  ./cryptoluks.sh create some_name size_in_GB"
+  echo "  ./cryptoluks.sh create some_name size_in_MB"
   echo "  ./cryptoluks.sh open some_name"
   echo "  ./cryptoluks.sh close some_name"
 }
@@ -42,7 +42,7 @@ else
     # Create
     # Accept filename, size of file in gigabytes, filesystem
     echo "Writing zeroes into ${FILENAME}"
-    sudo dd if=/dev/zero bs=1G count="${FILESIZE}" of="${FILENAME}"
+    sudo dd if=/dev/zero bs=1M count="${FILESIZE}" of="${FILENAME}"
     echo "Preparing ${FILENAME} for LUKS"
     sudo cryptsetup luksFormat "${FILENAME}"
     cryptoluks_luksopen
