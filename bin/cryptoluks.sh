@@ -1,31 +1,36 @@
 #!/usr/bin/env bash
+set -eo pipefail
 
 COMMAND=$1
-FILENAME=$2
+FILEPATH=$2
 FILESIZE=$3
+
+FILENAME=$(basename -- "${FILEPATH}")
 
 cryptoluks_mountpoint="${HOME}/cryptoluks/${FILENAME}"
 
+function finish() {
+  rmdir ${cryptoluks_mountpoint}
+}
+#trap finish SIGTERM
+
 function usage() {
   echo "Usage: ./cryptoluks.sh command [args ...]"
-  echo "  ./cryptoluks.sh create some_name size_in_MB"
+  echo "  ./cryptoluks.sh create some_name size_in_MB (at least 10 MB)"
   echo "  ./cryptoluks.sh open some_name"
-  echo "  ./cryptoluks.sh close some_name"
+  echo -e "  ./cryptoluks.sh close some_name\n"
 }
 
 function cryptoluks_mount() {
-  if [[ -d "${cryptoluks_mountpoint}" ]] ; then
-    echo "Creating ${cryptoluks_mountpoint}"
-    mkdir -p "${cryptoluks_mountpoint}"
-  fi
-  echo "Mounting ${FILENAME} to ${cryptoluks_mountpoint}"
+  [[ -d "${cryptoluks_mountpoint}" ]] || mkdir -p "${cryptoluks_mountpoint}"
   sudo mount -t ext4 "/dev/mapper/${FILENAME}" "${cryptoluks_mountpoint}" \
-  && echo "Mount successful"
+  && echo -e "Mount successful\n"
 }
 
 function cryptoluks_luksopen() {
-  echo "Opening ${FILENAME} with LUKS"
-  sudo cryptsetup luksOpen "${FILENAME}" "${FILENAME}"
+  #sudo cryptsetup status ${FILENAME}
+  sudo cryptsetup luksOpen "${FILENAME}" "${FILENAME}" \
+  && echo -e "luksOpen successful\n"
 }
 
 # No command? Show help
@@ -39,18 +44,22 @@ else
       usage
       exit
     fi
+
     # Create
     # Accept filename, size of file in gigabytes, filesystem
-    echo "Writing zeroes into ${FILENAME}"
-    sudo dd if=/dev/zero bs=1M count="${FILESIZE}" of="${FILENAME}"
-    echo "Preparing ${FILENAME} for LUKS"
-    sudo cryptsetup luksFormat "${FILENAME}"
+    sudo dd if=/dev/zero bs=1M count="${FILESIZE}" of="${FILENAME}" >& /dev/null \
+    && sudo cryptsetup luksFormat "${FILENAME}" \
+    && echo -e "Preparing ${FILENAME} for LUKS\n"
+
     cryptoluks_luksopen
+
     echo "Writing ext4 filesystem to ${FILENAME}"
-    sudo mkfs.ext4 "/dev/mapper/${FILENAME}"
+    sudo mkfs.ext4 "/dev/mapper/${FILENAME}" >& /dev/null
+
     cryptoluks_mount
+
     echo "Done!"
-    #echo "You may want to run sudo chown $USER -R ${cryptoluks_mountpoint}"
+    #sudo chown $USER -R ${cryptoluks_mountpoint}
   elif [ "${COMMAND}" = "open" ]; then
     # Open
     cryptoluks_luksopen
@@ -59,7 +68,8 @@ else
     # Close
     sudo umount "${cryptoluks_mountpoint}" \
     && sudo cryptsetup luksClose "${FILENAME}" \
-    && echo "Unmounted and closed ${FILENAME}"
+    && echo -e "Unmounted and closed ${FILENAME} \n"
+    sudo rmdir "${cryptoluks_mountpoint}"
   else
     usage
   fi
