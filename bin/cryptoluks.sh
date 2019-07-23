@@ -4,6 +4,7 @@ set -eo pipefail
 COMMAND=$1
 FILEPATH=$2
 FILESIZE=$3
+USER_ID=$(whoami)
 
 FILENAME=$(basename -- "${FILEPATH}")
 
@@ -59,7 +60,7 @@ else
     cryptoluks_mount
 
     echo "Done!"
-    #sudo chown $USER -R ${cryptoluks_mountpoint}
+    sudo chown $USER_ID.$USER_ID -R ${cryptoluks_mountpoint}
   elif [ "${COMMAND}" = "open" ]; then
     # Open
     cryptoluks_luksopen
