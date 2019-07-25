@@ -20,25 +20,29 @@ brew install coreutils
 brew cask install docker
 ```
 
-### running it
+### build
 
 ```
 ./bin/build.sh
-./bin/run.sh
+```
 
+### run
+
+```
+./bin/run.sh
 ./bin/cryptoluks.sh
 ```
 
-![image](https://gfycat.com/hollowneedydeviltasmanian)
+![cryptoluks_run.gif](/img/cryptoluks_run.gif)
 
-## running the `bin/cryptoluks.sh` directly on the Linux host
+## run the `bin/cryptoluks.sh` directly on the Linux host
 
 ```
 sudo apt-get -y install \
   cryptsetup exfat-fuse exfat-utils sudo
 ```
 
-### running it
+### run
 
 ```
 ./bin/cryptoluks.sh
