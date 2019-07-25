@@ -4,12 +4,9 @@
 SCRIPTNAME="$(realpath $0)"
 SCRIPTPATH="$(dirname $SCRIPTNAME)"
 
-image_name=cryptoluks
+# `name` and `version` configured from here
+source ${SCRIPTPATH}/../.info
 
-if [[ -z ${1+x} ]]; then
-  version="$(cat ${SCRIPTPATH}/../.version)"
-else
-  version="${1}"
-fi
-
-docker build -t ${image_name}:${version} "${SCRIPTPATH}/.."
+docker build -t ${name}:${version} "${SCRIPTPATH}/.." \
+  --build-arg user=${USER} \
+  --build-arg kernel_ver=${kernel_ver}
