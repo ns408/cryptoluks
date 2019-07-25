@@ -29,6 +29,8 @@ brew cask install docker
 ./bin/cryptoluks.sh
 ```
 
+![image](https://gfycat.com/hollowneedydeviltasmanian)
+
 ## running the `bin/cryptoluks.sh` directly on the Linux host
 
 ```
